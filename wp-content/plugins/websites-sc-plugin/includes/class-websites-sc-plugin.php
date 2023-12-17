@@ -4,12 +4,12 @@ class Websites_Sc_Plugin {
 
   public function __construct() {
       // Add hooks and filters here
-      add_shortcode('website_sc_form', array($this, 'render_form_shortcode'));
-      add_action('init', array($this, 'register_custom_post_type'));
-      add_action('add_meta_boxes', array($this, 'add_custom_metabox'));
+      add_shortcode('website_sc_form', array($this, 'render_form_shortcode')); //Add shortcode to display form
+      add_action('init', array($this, 'register_custom_post_type')); // registers CPT Websites
+      add_action('add_meta_boxes', array($this, 'add_custom_metabox')); //adds meta box
 
       // Handle form submission
-      add_action('admin_post_submit_website_form', array($this, 'submit_website_form'));
+      add_action('admin_post_submit_website_form', array($this, 'submit_website_form')); //Handles form submission
   }
 
   public function render_form_shortcode() {
@@ -57,7 +57,7 @@ class Websites_Sc_Plugin {
           update_post_meta($post_id, '_website_source_code', $source_code);
       }
 
-      // Redirect after form submission
+      // Redirect after form submission or success
       wp_redirect(home_url('/success'));
       exit();
   }
@@ -66,18 +66,18 @@ class Websites_Sc_Plugin {
       // Initialize an empty variable to store the source code
       $source_code = '';
 
-      // Use wp_remote_get to fetch the content of the website
+      // Uses wp_remote_get to fetch the content of the website
       $response = wp_remote_get($website_url);
 
       // Check if the operation was successful
       if (!is_wp_error($response) && wp_remote_retrieve_response_code($response) === 200) {
-          // Sanitize the fetched data (you might need to adjust this based on your requirements)
           $source_code = wp_remote_retrieve_body($response);
       }
 
       return $source_code;
   }
 
+  //Creates Custom Post Type Websites
   public function register_custom_post_type() {
       $labels = array(
           'name'               => _x('Websites', 'post type general name', 'your-text-domain'),
@@ -116,6 +116,7 @@ class Websites_Sc_Plugin {
       register_post_type('websites', $args);
   }
 
+  //Handles Meta Boxes on Website Edit Screen
   public function add_custom_metabox() {
       add_meta_box(
           'website_source_code_metabox',          // Unique ID
@@ -129,6 +130,7 @@ class Websites_Sc_Plugin {
       remove_meta_box('submitdiv', 'websites', 'side');
   }
 
+  //Adds source code of the url or website to a text area
   public function render_website_source_code_metabox($post) {
       // Retrieve the existing value from the database
       $source_code = get_post_meta($post->ID, '_website_source_code', true);
@@ -138,27 +140,6 @@ class Websites_Sc_Plugin {
       <label for="website_source_code">Website Source Code:</label>
       <textarea id="website_source_code" name="website_source_code" style="width: 100%;" rows="10" readonly><?php echo esc_textarea($source_code); ?></textarea>
       <?php
-  }
-
-  // Populate custom columns for the websites list page
-  public function populate_websites_columns($column, $post_id) {
-    switch ($column) {
-        case 'title':
-            // Check if the current user can edit websites
-            if (current_user_can('edit_websites')) {
-                // Editors and above can see the link
-                echo '<a href="' . esc_url(get_edit_post_link($post_id)) . '"><strong>' . get_the_title($post_id) . '</strong></a>';
-            } else {
-                // Editors and below see only the name without the link
-                echo '<strong>' . get_the_title($post_id) . '</strong>';
-            }
-            break;
-        case 'author':
-            echo get_the_author_meta('display_name', get_post_field('post_author', $post_id));
-            break;
-        default:
-            break;
-    }
   }
 
 }

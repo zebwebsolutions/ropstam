@@ -13,16 +13,10 @@
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  */
 
- ini_set('display_errors', 1);
- ini_set('display_startup_errors', 1);
- error_reporting(E_ALL);
-
  // Ensure this file is only executed within the WordPress environment
 if (!defined('ABSPATH')) {
     exit;
 }
-
-// Add scripts and styles here if needed
 
 // Include the main plugin class
 require_once(plugin_dir_path(__FILE__) . 'includes/class-websites-sc-plugin.php');

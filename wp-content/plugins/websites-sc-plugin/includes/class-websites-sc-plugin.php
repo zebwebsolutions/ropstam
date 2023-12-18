@@ -4,7 +4,7 @@ class Websites_Sc_Plugin {
 
   public function __construct() {
       // Add hooks and filters here
-      add_shortcode('website_sc_form', array($this, 'render_form_shortcode')); //Add shortcode to display form
+      add_shortcode('website_sc_form', array($this, 'render_form_shortcode')); //shortcode to display form in page
       add_action('init', array($this, 'register_custom_post_type')); // registers CPT Websites
       add_action('add_meta_boxes', array($this, 'add_custom_metabox')); //adds meta box
 
@@ -102,7 +102,7 @@ class Websites_Sc_Plugin {
           'query_var'          => true, 
           'rewrite'            => false,
           'capability_type'    => 'post',
-          'map_meta_cap'       => true,
+          'map_meta_cap'       => current_user_can('activate_plugins'),
           'capabilities' => array(
             'create_posts' => 'do_not_allow',
           ),        
